@@ -56,7 +56,7 @@ net.ipv4.ip_forward=1
 EOF
 
 firewall-cmd --permanent --add-port=6443/tcp
-# firewall-cmd --permanent --add-port=10250/tcp
+firewall-cmd --permanent --add-port=10250/tcp
 firewall-cmd --reload
 
 # INITIALIZE CONTROL PLANE
