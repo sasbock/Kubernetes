@@ -122,6 +122,27 @@ esac
 # INITIALIZE CONTROL PLANE
 case "$ROLE" in
 master)
+	case "$DISTRIBUTION" in
+	rpm)
+		touch $HOME/.bash_profile
+		while IFS= read -r line; do
+			grep -Fxq "$line" $HOME/.bash_profile || echo "$line" >> $HOME/.bash_profile
+		done <<-EOF
+		export KUBECONFIG=/etc/kubernetes/admin.conf
+		EOF
+
+		;;
+	deb)
+		touch $HOME/.bash_profile
+		while IFS= read -r line; do
+			grep -Fxq "$line" $HOME/.bash_profile || echo "$line" >> $HOME/.bash_profile
+		done <<-EOF
+		export KUBECONFIG=/etc/kubernetes/admin.conf
+		EOF
+
+		;;
+	esac
+
 	kubeadm config images pull
 	;;
 esac
