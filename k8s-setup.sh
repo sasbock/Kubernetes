@@ -124,4 +124,5 @@ esac
 case "$ROLE" in
 master)
 	kubeadm config images pull
+	;;
 esac
