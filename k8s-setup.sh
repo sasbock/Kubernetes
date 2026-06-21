@@ -102,6 +102,8 @@ net.bridge.bridge-nf-call-ip6tables=1
 net.ipv4.ip_forward=1
 EOF
 
+sysctl --system > /dev/null
+
 case "$DISTRIBUTION" in
 rpm)
 	systemctl enable --now firewalld
