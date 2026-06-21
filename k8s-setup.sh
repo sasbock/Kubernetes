@@ -105,7 +105,6 @@ EOF
 case "$DISTRIBUTION" in
 rpm)
 	systemctl enable --now firewalld
-	firewall-cmd --permanent --add-service=ssh
 	firewall-cmd --permanent --add-port=6443/tcp
 	firewall-cmd --permanent --add-port=10250/tcp
 	firewall-cmd --reload
