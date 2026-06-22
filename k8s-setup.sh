@@ -112,11 +112,18 @@ rpm)
 	firewall-cmd --reload
 	;;
 deb)
+	update-alternatives --set iptables /usr/sbin/iptables-legacy
+	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 	systemctl enable --now ufw
 	ufw --force enable
 	ufw allow ssh
 	ufw allow 6443/tcp
 	ufw allow 10250/tcp
+	ufw allow from 10.244.0.0/16
+	ufw allow to 10.244.0.0/16
+	ufw allow from 10.96.0.0/12
+	ufw allow to 10.96.0.0/12
+	ufw allow 8472/udp
 	ufw reload
 	;;
 esac
