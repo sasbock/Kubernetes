@@ -112,6 +112,8 @@ rpm)
 	firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -s 10.244.0.0/16 -j ACCEPT
 	firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -s 10.96.0.0/12 -j ACCEPT
 	firewall-cmd --permanent --add-port=8472/udp
+	firewall-cmd --permanent --zone=trusted --add-interface=flannel.1
+	firewall-cmd --permanent --zone=trusted --add-interface=cni0
 	firewall-cmd --reload
 	;;
 deb)
