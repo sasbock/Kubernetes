@@ -69,7 +69,7 @@ esac
 # INSTALL KUBERNETES AND CONTAINER DAEMON
 case "$DISTRIBUTION" in
 rpm)
-	dnf install -y --skip-broken net-tools epel-release 
+	dnf install -y --skip-unavailable net-tools epel-release 
 	dnf install -y kubelet kubeadm kubectl containerd
 	;;
 deb)
