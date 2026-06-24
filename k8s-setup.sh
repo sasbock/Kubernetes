@@ -75,11 +75,11 @@ esac
 case "$DISTRIBUTION" in
 rpm)
 	dnf install -y --skip-unavailable net-tools epel-release 
-	dnf install -y kubelet kubeadm kubectl containerd
+	dnf install -y kubelet kubeadm kubectl kubernetes-cni containerd
 	;;
 deb)
 	apt update
-	apt install -y net-tools kubelet kubeadm kubectl containerd
+	apt install -y net-tools kubelet kubeadm kubectl kubernetes-cni containerd
 	;;
 esac
 
