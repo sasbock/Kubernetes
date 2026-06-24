@@ -44,6 +44,11 @@ EOF
 # DISABLE SWAPPING
 swapoff -a
 sed -i '/^[[:space:]]*#/! s/^\([[:space:]]*[^[:space:]].*[[:space:]]swap[[:space:]].*\)$/# \1/' /etc/fstab
+case "$DISTRIBUTION" in
+rpm)
+	dnf remove -y zram-generator-defaults
+	;;
+esac
 
 # CONFIGURE KUBERNETES 1.36 REPOSITORY
 case "$DISTRIBUTION" in
