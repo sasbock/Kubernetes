@@ -39,6 +39,10 @@ done << 'EOF'
 192.168.0.202	k8s-worker-01
 192.168.0.203	k8s-worker-02
 192.168.0.204	k8s-worker-03
+192.168.0.205	k8s-worker-04
+192.168.0.206	k8s-worker-05
+192.168.0.207	k8s-worker-06
+192.168.0.208	k8s-worker-07
 EOF
 
 # DISABLE SWAPPING
@@ -74,8 +78,9 @@ esac
 # INSTALL KUBERNETES AND CONTAINER DAEMON
 case "$DISTRIBUTION" in
 rpm)
-	dnf install -y --skip-unavailable net-tools epel-release 
-	dnf install -y kubelet kubeadm kubectl kubernetes-cni containerd
+	dnf install -y --skip-unavailable net-tools epel-release dnf-plugins-core
+	dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
 	;;
 deb)
 	apt update
