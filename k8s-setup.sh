@@ -51,16 +51,14 @@ EOF
 swapoff -a
 sed -i '/^[[:space:]]*#/! s/^\([[:space:]]*[^[:space:]].*[[:space:]]swap[[:space:]].*\)$/# \1/' /etc/fstab
 case "$DISTRIBUTION" in
-rocky)
-fedora)
+rocky|fedora)
 	dnf remove -y zram-generator-defaults
 	;;
 esac
 
 # CONFIGURE KUBERNETES 1.36 REPOSITORY
 case "$DISTRIBUTION" in
-rocky)
-fedora)
+rocky|fedora)
 	cat <<-EOF > /etc/yum.repos.d/kubernetes.repo
 	[kubernetes]
 	name=Kubernetes
@@ -83,6 +81,7 @@ esac
 case "$DISTRIBUTION" in
 rocky)
 	dnf install -y epel-release
+	;&
 fedora)
 	dnf install -y net-tools dnf-plugins-core
 	dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
@@ -121,8 +120,7 @@ EOF
 sysctl --system > /dev/null
 
 case "$DISTRIBUTION" in
-rocky)
-fedora)
+rocky|fedora)
 	systemctl enable --now firewalld
 	firewall-cmd --permanent --add-port=6443/tcp
 	firewall-cmd --permanent --add-port=10250/tcp
