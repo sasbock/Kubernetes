@@ -19,10 +19,12 @@ if [[ "$ROLE" != "master" && ! "$ROLE" =~ ^worker-[0-9]+$ ]]; then
 	exit 1
 fi
 
-if grep -qiE 'rhel|centos|fedora|rocky|almalinux' /etc/os-release; then
-	DISTRIBUTION=rpm
-elif grep -qiE 'debian|ubuntu' /etc/os-release; then
-	DISTRIBUTION=deb
+if grep -qiE 'rocky' /etc/os-release; then
+	DISTRIBUTION=rocky
+elif grep -qiE 'fedora' /etc/os-release; then
+	DISTRIBUTION=fedora
+elif grep -qiE 'ubuntu' /etc/os-release; then
+	DISTRIBUTION=ubuntu
 else
 	echo "Unsupported distribution"
 	exit 1
@@ -49,14 +51,16 @@ EOF
 swapoff -a
 sed -i '/^[[:space:]]*#/! s/^\([[:space:]]*[^[:space:]].*[[:space:]]swap[[:space:]].*\)$/# \1/' /etc/fstab
 case "$DISTRIBUTION" in
-rpm)
+rocky)
+fedora)
 	dnf remove -y zram-generator-defaults
 	;;
 esac
 
 # CONFIGURE KUBERNETES 1.36 REPOSITORY
 case "$DISTRIBUTION" in
-rpm)
+rocky)
+fedora)
 	cat <<-EOF > /etc/yum.repos.d/kubernetes.repo
 	[kubernetes]
 	name=Kubernetes
@@ -65,25 +69,26 @@ rpm)
 	gpgcheck=1
 	gpgkey=https://pkgs.k8s.io/core:/stable:/v1.36/rpm/repodata/repomd.xml.key
 	EOF
-        ;;
-deb)
+	;;
+ubuntu)
 	mkdir -p /etc/apt/keyrings
 	curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key | gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 	cat <<-EOF > /etc/apt/sources.list.d/kubernetes.list
 	deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /
 	EOF
-        ;;
+	;;
 esac
 
 # INSTALL KUBERNETES AND CONTAINER DAEMON
 case "$DISTRIBUTION" in
-rpm)
+rocky)
 	dnf install -y epel-release
+fedora)
 	dnf install -y net-tools dnf-plugins-core
 	dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
 	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
 	;;
-deb)
+ubuntu)
 	apt update
 	apt install -y net-tools kubelet kubeadm kubectl kubernetes-cni containerd
 	;;
@@ -116,7 +121,8 @@ EOF
 sysctl --system > /dev/null
 
 case "$DISTRIBUTION" in
-rpm)
+rocky)
+fedora)
 	systemctl enable --now firewalld
 	firewall-cmd --permanent --add-port=6443/tcp
 	firewall-cmd --permanent --add-port=10250/tcp
@@ -127,7 +133,7 @@ rpm)
 	firewall-cmd --permanent --zone=trusted --add-interface=cni0
 	firewall-cmd --reload
 	;;
-deb)
+ubuntu)
 	update-alternatives --set iptables /usr/sbin/iptables-legacy
 	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
 	systemctl enable --now ufw
