@@ -86,7 +86,6 @@ rocky)
 	;;
 fedora)
 	dnf install -y net-tools dnf-plugins-core
-#	dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 	sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
 	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
 	;;
@@ -97,6 +96,7 @@ ubuntu)
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 	chmod a+r /etc/apt/keyrings/docker.asc
 	echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "${UBUNTU_CODENAME}") stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
+	apt update
 	apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 	systemctl enable --now docker
 	;;
