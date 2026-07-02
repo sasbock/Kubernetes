@@ -66,4 +66,20 @@ rocky|fedora)
 
     echo "Successfully configured $INTERFACE with IP address $IPADDR."
     ;;
+ubuntu)
+	cat <<-EOF | tee /etc/netplan/00-installer-config.yaml > /dev/null
+	network:
+		version: 2
+		renderer: networkd
+		ethernets:
+			enp0s8:
+				dhcp4: false
+				dhcp6: false
+				addresses:
+					- 192.168.56.4/24
+	EOF
+
+	sudo netplan apply
+
+	;;
 esac
