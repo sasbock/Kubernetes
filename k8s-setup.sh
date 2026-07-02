@@ -37,14 +37,14 @@ hostnamectl hostname k8s-$ROLE
 while IFS= read -r line; do
 	grep -Fxq "$line" /etc/hosts || echo "$line" >> /etc/hosts
 done << 'EOF'
-192.168.0.201	k8s-master
-192.168.0.202	k8s-worker-01
-192.168.0.203	k8s-worker-02
-192.168.0.204	k8s-worker-03
-192.168.0.205	k8s-worker-04
-192.168.0.206	k8s-worker-05
-192.168.0.207	k8s-worker-06
-192.168.0.208	k8s-worker-07
+192.168.56.10	k8s-master
+192.168.56.11	k8s-worker-01
+192.168.56.12	k8s-worker-02
+192.168.56.13	k8s-worker-03
+192.168.56.14	k8s-worker-04
+192.168.56.15	k8s-worker-05
+192.168.56.16	k8s-worker-06
+192.168.56.17	k8s-worker-07
 EOF
 
 # DISABLE SWAPPING
