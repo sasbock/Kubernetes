@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Validate number of arguments
+# VALIDATE NUMBER OF ARGUMENTS
 if [[ $# -ne 1 ]]; then
 	echo "Usage: $0 <master|worker-n>"
 	echo "  master"
@@ -10,7 +10,7 @@ fi
 
 ROLE="$1"
 
-# Validate argument format
+# VALIDATE ARGUMENT FORMAT
 if [[ "$ROLE" != "master" && ! "$ROLE" =~ ^worker-[0-9]+$ ]]; then
 	echo "Error: Invalid parameter '$ROLE'"
 	echo "Usage: $0 <master|worker-n>"
