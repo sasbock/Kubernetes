@@ -86,7 +86,8 @@ rocky)
 	;;
 fedora)
 	dnf install -y net-tools dnf-plugins-core
-	dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+#	dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+	sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
 	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
 	;;
 ubuntu)
