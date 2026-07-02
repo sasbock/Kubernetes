@@ -62,6 +62,6 @@ nmcli connection add \
     ipv6.method ignore \
     autoconnect yes
 
-nmcli connection up "$INERFACE"
+nmcli connection up "$INTERFACE"
 
 echo "Successfully configured $INTERFACE with IP address $IPADDR."
