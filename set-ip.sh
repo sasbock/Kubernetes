@@ -45,26 +45,23 @@ if ! ip link show "$INTERFACE" >/dev/null 2>&1; then
     exit 1
 fi
 
-# Find the NetworkManager connection associated with the interface
-CONNECTION=$(nmcli -t -f NAME,DEVICE connection show | \
-    awk -F: -v iface="$INTERFACE" '$2 == iface { print $1; exit }')
+# Remove any existing connection for the interface
+while read -r NAME DEVICE; do
+    if [[ "$DEVICE" == "$IFACE" ]]; then
+        nmcli connection delete "$NAME"
+    fi
+done < <(nmcli -t -f NAME,DEVICE connection show)
 
-if [[ -z "$CONNECTION" ]]; then
-    echo "Error: No NetworkManager connection found for $INTERFACE."
-    exit 1
-fi
+# Create a new persistent connection
+nmcli connection add \
+    type ethernet \
+    ifname "$IFACE" \
+    con-name "$IFACE" \
+    ipv4.method manual \
+    ipv4.addresses "$IP" \
+    ipv6.method ignore \
+    autoconnect yes
 
-echo "Updating interface '$INTERFACE' on Rocky Linux..."
-echo "Connection: $CONNECTION"
-echo "New IP: $IPADDR"
-
-# Configure a static IPv4 address while leaving the current gateway/DNS unchanged.
-nmcli connection modify "$CONNECTION" \
-    ipv4.addresses "$IPADDR" \
-    ipv4.method manual
-
-# Reactivate the connection
-nmcli connection down "$CONNECTION" || true
-nmcli connection up "$CONNECTION"
+nmcli connection up "$IFACE"
 
 echo "Successfully configured $INTERFACE with IP address $IPADDR."
