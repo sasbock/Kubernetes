@@ -76,7 +76,7 @@ ubuntu)
 				dhcp4: false
 				dhcp6: false
 				addresses:
-					- 192.168.56.4/24
+					- $IPADDR
 	EOF
 
 	sudo netplan apply
