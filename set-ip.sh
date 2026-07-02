@@ -69,14 +69,14 @@ rocky|fedora)
 ubuntu)
 	cat <<-EOF | tee /etc/netplan/00-installer-config.yaml > /dev/null
 	network:
-		version: 2
-		renderer: networkd
-		ethernets:
-			enp0s8:
-				dhcp4: false
-				dhcp6: false
-				addresses:
-					- $IPADDR
+	  version: 2
+	  renderer: networkd
+	  ethernets:
+	    enp0s8:
+	      dhcp4: false
+	      dhcp6: false
+	      addresses:
+	        - $IPADDR
 	EOF
 
 	sudo netplan apply
