@@ -80,11 +80,13 @@ esac
 # INSTALL KUBERNETES AND CONTAINER DAEMON
 case "$DISTRIBUTION" in
 rocky)
-	dnf install -y epel-release
-	;&
+	dnf install -y epel-release net-tools dnf-plugins-core
+	dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
+	;;
 fedora)
 	dnf install -y net-tools dnf-plugins-core
-	dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+	dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
 	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
 	;;
 ubuntu)
