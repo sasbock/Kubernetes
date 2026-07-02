@@ -47,7 +47,7 @@ fi
 
 # Remove any existing connection for the interface
 while read -r NAME DEVICE; do
-    if [[ "$DEVICE" == "$IFACE" ]]; then
+    if [[ "$DEVICE" == "$INTERFACE" ]]; then
         nmcli connection delete "$NAME"
     fi
 done < <(nmcli -t -f NAME,DEVICE connection show)
@@ -55,13 +55,13 @@ done < <(nmcli -t -f NAME,DEVICE connection show)
 # Create a new persistent connection
 nmcli connection add \
     type ethernet \
-    ifname "$IFACE" \
-    con-name "$IFACE" \
+    ifname "$INTERFACE" \
+    con-name "$INTERFACE" \
     ipv4.method manual \
-    ipv4.addresses "$IP" \
+    ipv4.addresses "$IPADDR" \
     ipv6.method ignore \
     autoconnect yes
 
-nmcli connection up "$IFACE"
+nmcli connection up "$INERFACE"
 
 echo "Successfully configured $INTERFACE with IP address $IPADDR."
