@@ -20,48 +20,50 @@ if [[ $EUID -ne 0 ]]; then
     exit 1
 fi
 
-# Verify Rocky Linux
-if [[ ! -f /etc/os-release ]]; then
-    echo "Error: Cannot determine operating system."
-    exit 1
+if grep -qiE 'rocky' /etc/os-release; then
+	DISTRIBUTION=rocky
+elif grep -qiE 'fedora' /etc/os-release; then
+	DISTRIBUTION=fedora
+elif grep -qiE 'ubuntu' /etc/os-release; then
+	DISTRIBUTION=ubuntu
+else
+	echo "Unsupported distribution"
+	exit 1
 fi
 
-source /etc/os-release
-
-if [[ "$ID" != "rocky" ]]; then
-    echo "Error: This script only supports Rocky Linux."
-    exit 1
-fi
-
-# Verify NetworkManager is available
-if ! command -v nmcli >/dev/null 2>&1; then
-    echo "Error: nmcli is not installed."
-    exit 1
-fi
-
-# Verify interface exists
-if ! ip link show "$INTERFACE" >/dev/null 2>&1; then
-    echo "Error: Network interface '$INTERFACE' does not exist."
-    exit 1
-fi
-
-# Remove any existing connection for the interface
-while read -r NAME DEVICE; do
-    if [[ "$DEVICE" == "$INTERFACE" ]]; then
-        nmcli connection delete "$NAME"
+case "$DISTRIBUTION" in
+rocky|fedora)
+    # Verify NetworkManager is available
+    if ! command -v nmcli >/dev/null 2>&1; then
+        echo "Error: nmcli is not installed."
+        exit 1
     fi
-done < <(nmcli -t -f NAME,DEVICE connection show)
 
-# Create a new persistent connection
-nmcli connection add \
-    type ethernet \
-    ifname "$INTERFACE" \
-    con-name "$INTERFACE" \
-    ipv4.method manual \
-    ipv4.addresses "$IPADDR" \
-    ipv6.method ignore \
-    autoconnect yes
+    # Verify interface exists
+    if ! ip link show "$INTERFACE" >/dev/null 2>&1; then
+        echo "Error: Network interface '$INTERFACE' does not exist."
+        exit 1
+    fi
 
-nmcli connection up "$INTERFACE"
+    # Remove any existing connection for the interface
+    while read -r NAME DEVICE; do
+        if [[ "$DEVICE" == "$INTERFACE" ]]; then
+            nmcli connection delete "$NAME"
+        fi
+    done < <(nmcli -t -f NAME,DEVICE connection show)
 
-echo "Successfully configured $INTERFACE with IP address $IPADDR."
+    # Create a new persistent connection
+    nmcli connection add \
+        type ethernet \
+        ifname "$INTERFACE" \
+        con-name "$INTERFACE" \
+        ipv4.method manual \
+        ipv4.addresses "$IPADDR" \
+        ipv6.method ignore \
+        autoconnect yes
+
+    nmcli connection up "$INTERFACE"
+
+    echo "Successfully configured $INTERFACE with IP address $IPADDR."
+    ;;
+esac
