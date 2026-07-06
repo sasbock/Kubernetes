@@ -51,6 +51,7 @@ Run the following commands on ALL Kubernetes nodes:
 
 sudo rm -f /etc/cni/net.d/10-flannel.conflist
 sudo rm -f /opt/cni/bin/flannel
+sudo systemctl restart kubelet
 
 ====================================================================
 EOF
