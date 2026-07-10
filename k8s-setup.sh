@@ -38,13 +38,21 @@ while IFS= read -r line; do
 	grep -Fxq "$line" /etc/hosts || echo "$line" >> /etc/hosts
 done << 'EOF'
 192.168.56.2	k8s-master
+192.168.56.2	k8s-master.local
 192.168.56.3	k8s-worker-01
+192.168.56.3	k8s-worker-01.local
 192.168.56.4	k8s-worker-02
+192.168.56.4	k8s-worker-02.local
 192.168.56.5	k8s-worker-03
+192.168.56.5	k8s-worker-03.local
 192.168.56.6	k8s-worker-04
+192.168.56.6	k8s-worker-04.local
 192.168.56.7	k8s-worker-05
+192.168.56.7	k8s-worker-05.local
 192.168.56.8	k8s-worker-06
+192.168.56.8	k8s-worker-06.local
 192.168.56.9	k8s-worker-07
+192.168.56.9	k8s-worker-07.local
 EOF
 
 # DISABLE SWAPPING
@@ -82,16 +90,16 @@ case "$DISTRIBUTION" in
 rocky)
 	dnf install -y epel-release net-tools dnf-plugins-core
 	dnf config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
-	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
+	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io helm
 	;;
 fedora)
 	dnf install -y net-tools dnf-plugins-core
 	sudo dnf config-manager addrepo --from-repofile=https://download.docker.com/linux/fedora/docker-ce.repo
-	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io
+	dnf install -y kubelet kubeadm kubectl kubernetes-cni docker-ce docker-ce-cli docker-buildx-plugin docker-compose-plugin containerd.io helm
 	;;
 ubuntu)
 	apt update
-	apt install -y net-tools ca-certificates curl kubelet kubeadm kubectl kubernetes-cni 
+	apt install -y net-tools ca-certificates curl kubelet kubeadm kubectl kubernetes-cni helm
 	install -m 0755 -d /etc/apt/keyrings
 	curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
 	chmod a+r /etc/apt/keyrings/docker.asc
