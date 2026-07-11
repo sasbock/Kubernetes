@@ -52,11 +52,20 @@ write_values_files() {
     cat > "${values_dir}/kube-prometheus-stack.yaml" <<EOF
 grafana:
   adminPassword: ${GRAFANA_ADMIN_PASSWORD}
+  hostNetwork: true
+  dnsPolicy: ClusterFirstWithHostNet
+  nodeSelector:
+    node-role.kubernetes.io/control-plane: ""
+  tolerations:
+    - key: node-role.kubernetes.io/control-plane
+      operator: Exists
+      effect: NoSchedule
+  grafana.ini:
+    server:
+      http_port: 80
   service:
     type: ClusterIP
     port: 80
-    externalIPs:
-      - ${GRAFANA_IP}
   additionalDataSources:
     - name: Loki
       type: loki
@@ -80,6 +89,16 @@ EOF
 
     cat > "${values_dir}/loki.yaml" <<'EOF'
 deploymentMode: SingleBinary
+gateway:
+  enabled: false
+chunksCache:
+  enabled: false
+resultsCache:
+  enabled: false
+lokiCanary:
+  enabled: false
+test:
+  enabled: false
 loki:
   auth_enabled: false
   commonConfig:
@@ -99,6 +118,12 @@ singleBinary:
   replicas: 1
   persistence:
     enabled: false
+  extraVolumes:
+    - name: storage
+      emptyDir: {}
+  extraVolumeMounts:
+    - name: storage
+      mountPath: /var/loki
 read:
   replicas: 0
 write:
@@ -122,6 +147,12 @@ tempo:
       backend: local
       local:
         path: /var/tempo/traces
+  extraVolumeMounts:
+    - name: storage
+      mountPath: /var/tempo
+extraVolumes:
+  - name: storage
+    emptyDir: {}
 persistence:
   enabled: false
 EOF
@@ -140,7 +171,7 @@ apply_monitoring() {
 
     local values_dir
     values_dir="$(mktemp -d)"
-    trap 'rm -rf "${values_dir}"' EXIT
+    trap 'rm -rf "${values_dir}"' RETURN
 
     write_values_files "${values_dir}"
 
