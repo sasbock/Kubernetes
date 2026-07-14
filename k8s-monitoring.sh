@@ -208,8 +208,11 @@ Grafana:      http://${GRAFANA_HOST}
 Username:     admin
 Password:     ${GRAFANA_ADMIN_PASSWORD}
 
-Note: ensure '${GRAFANA_HOST}' resolves to the ingress-nginx controller
-(e.g. add it to /etc/hosts pointing at a cluster node IP).
+Note: point '${GRAFANA_HOST}' at the ingress-nginx LoadBalancer IP, e.g. add
+it to /etc/hosts using the address from:
+  kubectl -n ingress-nginx get svc ingress-nginx-controller \\
+    -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+(that external IP is provided by MetalLB; see k8s-metallb.sh)
 
 Datasources configured in Grafana: Prometheus (default), Loki, Tempo
 EOF

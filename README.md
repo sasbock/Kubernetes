@@ -109,7 +109,11 @@ Common next steps include:
 | Script                 | Purpose                                              |
 |------------------------|------------------------------------------------------|
 | `k8s-setup.sh`         | Prepare a node as master or worker                   |
-| `k8s-start-cluster.sh` | Initialize the control plane and install Flannel     |
+| `k8s-cluster.sh`       | Initialize the control plane / join workers          |
+| `k8s-cni.sh`           | Install a CNI (Flannel), pinned to the node network  |
+| `k8s-metallb.sh`       | Install MetalLB (L2) for LoadBalancer external IPs   |
+| `k8s-ingress-nginx.sh` | Install the ingress-nginx controller                 |
+| `k8s-monitoring.sh`    | Deploy the monitoring stack (Prometheus, Grafana...) |
 
 ## Troubleshooting
 
