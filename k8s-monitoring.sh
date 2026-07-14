@@ -3,7 +3,7 @@
 set -euo pipefail
 
 NAMESPACE="monitoring"
-GRAFANA_IP="192.168.56.2"
+GRAFANA_HOST="grafana.local"
 GRAFANA_ADMIN_PASSWORD="admin"
 
 RELEASE_MONITORING="monitoring"
@@ -21,7 +21,7 @@ Commands:
   apply    Deploy Prometheus, Grafana, Alertmanager, Loki, Promtail, and Tempo
   delete   Remove the monitoring stack from the cluster
 
-Grafana is exposed at http://${GRAFANA_IP} (admin / ${GRAFANA_ADMIN_PASSWORD})
+Grafana is exposed at http://${GRAFANA_HOST} (admin / ${GRAFANA_ADMIN_PASSWORD})
 EOF
     exit 1
 }
@@ -52,20 +52,19 @@ write_values_files() {
     cat > "${values_dir}/kube-prometheus-stack.yaml" <<EOF
 grafana:
   adminPassword: ${GRAFANA_ADMIN_PASSWORD}
-  hostNetwork: true
-  dnsPolicy: ClusterFirstWithHostNet
-  nodeSelector:
-    node-role.kubernetes.io/control-plane: ""
-  tolerations:
-    - key: node-role.kubernetes.io/control-plane
-      operator: Exists
-      effect: NoSchedule
   grafana.ini:
     server:
-      http_port: 80
+      http_port: 3000
   service:
     type: ClusterIP
     port: 80
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    hosts:
+      - ${GRAFANA_HOST}
+    path: /
+    pathType: Prefix
   additionalDataSources:
     - name: Loki
       type: loki
@@ -205,9 +204,12 @@ apply_monitoring() {
     kubectl get pods -n "${NAMESPACE}"
     echo
     cat <<EOF
-Grafana:      http://${GRAFANA_IP}
+Grafana:      http://${GRAFANA_HOST}
 Username:     admin
 Password:     ${GRAFANA_ADMIN_PASSWORD}
+
+Note: ensure '${GRAFANA_HOST}' resolves to the ingress-nginx controller
+(e.g. add it to /etc/hosts pointing at a cluster node IP).
 
 Datasources configured in Grafana: Prometheus (default), Loki, Tempo
 EOF
