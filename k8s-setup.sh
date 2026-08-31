@@ -70,17 +70,17 @@ rocky|fedora)
 	cat <<-EOF > /etc/yum.repos.d/kubernetes.repo
 	[kubernetes]
 	name=Kubernetes
-	baseurl=https://pkgs.k8s.io/core:/stable:/v1.36/rpm/
+	baseurl=https://pkgs.k8s.io/core:/stable:/v1.37/rpm/
 	enabled=1
 	gpgcheck=1
-	gpgkey=https://pkgs.k8s.io/core:/stable:/v1.36/rpm/repodata/repomd.xml.key
+	gpgkey=https://pkgs.k8s.io/core:/stable:/v1.37/rpm/repodata/repomd.xml.key
 	EOF
 	;;
 ubuntu)
 	mkdir -p /etc/apt/keyrings
-	curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.36/deb/Release.key | gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+	curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.37/deb/Release.key | gpg --dearmor --yes -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 	cat <<-EOF > /etc/apt/sources.list.d/kubernetes.list
-	deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.36/deb/ /
+	deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.37/deb/ /
 	EOF
 	;;
 esac
