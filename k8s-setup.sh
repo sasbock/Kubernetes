@@ -127,7 +127,7 @@ EOF
 modprobe overlay
 modprobe br_netfilter
 
-# CONFIGURE NETWORKING AND FIREWALL
+# CONFIGURE NETWORKING AND DISABLE FIREWALL
 cat <<'EOF' > /etc/sysctl.d/k8s.conf
 net.bridge.bridge-nf-call-iptables=1
 net.bridge.bridge-nf-call-ip6tables=1
@@ -138,34 +138,13 @@ sysctl --system > /dev/null
 
 case "$DISTRIBUTION" in
 rocky|fedora)
-	systemctl enable --now firewalld
-	firewall-cmd --permanent --add-port=6443/tcp
-	firewall-cmd --permanent --add-port=10250/tcp
-	firewall-cmd --permanent --add-port=80/tcp
-	firewall-cmd --permanent --add-port=8080/tcp
-	firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -s 10.244.0.0/16 -j ACCEPT
-	firewall-cmd --permanent --direct --add-rule ipv4 filter INPUT 0 -s 10.96.0.0/12 -j ACCEPT
-	firewall-cmd --permanent --add-port=8472/udp
-	firewall-cmd --permanent --zone=trusted --add-interface=flannel.1
-	firewall-cmd --permanent --zone=trusted --add-interface=cni0
-	firewall-cmd --reload
+	systemctl disable --now firewalld
 	;;
 ubuntu)
 	update-alternatives --set iptables /usr/sbin/iptables-legacy
 	update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy
-	systemctl enable --now ufw
-	ufw --force enable
-	ufw allow ssh
-	ufw allow 6443/tcp
-	ufw allow 10250/tcp
-	ufw allow 80/tcp
-	ufw allow 8080/tcp
-	ufw allow from 10.244.0.0/16
-	ufw allow to 10.244.0.0/16
-	ufw allow from 10.96.0.0/12
-	ufw allow to 10.96.0.0/12
-	ufw allow 8472/udp
-	ufw reload
+	systemctl disable --now ufw
+	ufw --force disable
 	;;
 esac
 
