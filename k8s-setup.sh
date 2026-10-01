@@ -148,6 +148,33 @@ ubuntu)
 	;;
 esac
 
+# CONFIGURE TIME SYNC (VMs drift when the host suspends; certificates, etcd and
+# leases break on skewed clocks). "makestep 1 -1" lets chrony step the clock
+# instead of slewing, no matter how large the offset.
+case "$DISTRIBUTION" in
+rocky|fedora)
+	dnf install -y chrony
+	CHRONY_CONF=/etc/chrony.conf
+	CHRONY_SERVICE=chronyd
+	;;
+ubuntu)
+	apt install -y chrony
+	CHRONY_CONF=/etc/chrony/chrony.conf
+	CHRONY_SERVICE=chrony
+	;;
+esac
+
+if grep -q '^makestep' "$CHRONY_CONF"; then
+	sed -i 's/^makestep.*/makestep 1 -1/' "$CHRONY_CONF"
+else
+	echo "makestep 1 -1" >> "$CHRONY_CONF"
+fi
+
+systemctl enable --now "$CHRONY_SERVICE"
+systemctl restart "$CHRONY_SERVICE"
+timedatectl set-ntp true || true
+chronyc makestep || true
+
 # INITIALIZE CONTROL PLANE
 case "$ROLE" in
 master)
